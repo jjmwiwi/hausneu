@@ -7,7 +7,7 @@ const sqlite3 = require('sqlite3').verbose();
 
 // Import der neuen IPC-Handler
 try {
-  require('./src/main/ipc/belege');
+  require('./src/main/ipc/belege.js');
 } catch (error) {
   console.warn('Belege IPC-Handler konnten nicht geladen werden:', error.message);
 }
@@ -606,7 +606,7 @@ function registerIpcOnce() {
 
   // Neue Belege-IPC-Handler registrieren
   try {
-    const { registerBelegeHandlers } = require('./src/main/ipc/belege');
+    const { registerBelegeHandlers } = require('./src/main/ipc/belege.js');
     registerBelegeHandlers();
     console.log('Belege IPC-Handler erfolgreich registriert');
   } catch (error) {
