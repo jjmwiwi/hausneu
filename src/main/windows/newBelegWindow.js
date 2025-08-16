@@ -25,7 +25,7 @@ function createNewBelegWindow(parent) {
   if (isDev) {
     win.loadURL(process.env.VITE_DEV_SERVER_URL + "#/popup/neuer-beleg");
   } else {
-    win.loadURL(`file://${path.join(__dirname, "..", "..", "index.html")}#/popup/neuer-beleg`);
+    win.loadURL(`file://${path.join(__dirname, "..", "..", "..", "index.html")}#/popup/neuer-beleg`);
   }
   
   return win;
