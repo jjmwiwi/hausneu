@@ -105,13 +105,14 @@ const NeuerBelegPage: React.FC = () => {
   };
 
   return (
-    <div style={{ padding: '2rem', maxWidth: '600px', margin: '0 auto' }}>
+    <div data-testid="modal-beleg-erfassung" style={{ padding: '2rem', maxWidth: '600px', margin: '0 auto' }}>
       <h1>Neuer Beleg</h1>
       
       <div style={{ marginBottom: '1rem' }}>
         <label>
           Datum *
           <input
+            data-testid="input-datum"
             type="date"
             value={formData.datum}
             onChange={(e) => handleInputChange('datum', e.target.value)}
@@ -125,6 +126,7 @@ const NeuerBelegPage: React.FC = () => {
         <label>
           Betrag *
           <input
+            data-testid="input-betrag"
             type="number"
             step="0.01"
             min="0"
@@ -140,6 +142,7 @@ const NeuerBelegPage: React.FC = () => {
         <label>
           Kostenart *
           <select
+            data-testid="select-kostenart"
             value={formData.kostenartId}
             onChange={(e) => handleInputChange('kostenartId', e.target.value)}
             style={{ width: '100%', padding: '0.5rem', marginTop: '0.25rem' }}
@@ -159,6 +162,7 @@ const NeuerBelegPage: React.FC = () => {
         <label>
           Verwendungszweck *
           <input
+            data-testid="input-verwendungszweck"
             type="text"
             value={formData.verwendungszweck}
             onChange={(e) => handleInputChange('verwendungszweck', e.target.value)}
@@ -193,6 +197,7 @@ const NeuerBelegPage: React.FC = () => {
 
       <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
         <button
+          data-testid="btn-abbrechen"
           type="button"
           onClick={handleCancel}
           disabled={isSubmitting}
@@ -201,6 +206,7 @@ const NeuerBelegPage: React.FC = () => {
           Abbrechen
         </button>
         <button
+          data-testid="btn-speichern"
           type="button"
           onClick={handleSubmit}
           disabled={isSubmitting}

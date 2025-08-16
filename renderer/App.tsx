@@ -14,6 +14,7 @@ import BuchhaltungLayout from './components/buchhaltung/BuchhaltungLayout';
 import BuchhaltungBelegePage from './components/buchhaltung/BuchhaltungBelegePage';
 import BuchhaltungUmlageNachEinheitenPage from './components/buchhaltung/BuchhaltungUmlageNachEinheitenPage';
 import BankimportPage from './components/buchhaltung/BankimportPage';
+import NeuerBelegPage from './popup/NeuerBelegPage';
 import { NAV } from '../src/config/nav.config';
 import RouteDebug from './dev/RouteDebug';
 
@@ -64,6 +65,10 @@ const App: React.FC = () => {
               <Route path="*" element={<Navigate to={NAV.WEG.STAMMDATEN.path.slice(1)} replace />} />
             </Route>
           </Route>
+          
+          {/* Popup-Routen */}
+          <Route path="/popup/neuer-beleg" element={<NeuerBelegPage />} />
+          
           <Route path="*" element={<Navigate to={NAV.IMMOBILIEN.path} replace />} />
         </Routes>
         {process.env.NODE_ENV === 'development' && <RouteDebug />}

@@ -170,6 +170,9 @@ function registerBelegeHandlers() {
       console.error("Fehler beim Schließen des Popup-Fensters:", error);
     }
   });
+
+  // Debug-Ping für Tests
+  ipcMain.handle("debug:ping", () => "pong");
 }
 
 module.exports = { registerBelegeHandlers, setMainWindow };

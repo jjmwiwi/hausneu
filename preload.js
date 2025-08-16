@@ -13,7 +13,8 @@ const whitelistedChannels = [
   'belege:delete',
   'kostenarten:list',
   'belege:openCreateWindow',
-  'window:closeSelf'
+  'window:closeSelf',
+  'debug:ping'
 ];
 
 const whitelistedEvents = [
