@@ -11,11 +11,14 @@ const whitelistedChannels = [
   'belege:list',
   'belege:update',
   'belege:delete',
-  'kostenarten:list'
+  'kostenarten:list',
+  'belege:openCreateWindow',
+  'window:closeSelf'
 ];
 
 const whitelistedEvents = [
-  'db:changed'
+  'db:changed',
+  'belege:created'
 ];
 
 contextBridge.exposeInMainWorld('api', {

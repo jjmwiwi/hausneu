@@ -1,5 +1,15 @@
-const { ipcMain } = require("electron");
+const { ipcMain, BrowserWindow } = require("electron");
 const { run, get, all } = require("../db");
+const { createNewBelegWindow } = require("../windows/newBelegWindow.js");
+
+let mainWindow = null;
+
+/**
+ * Setzt die Referenz auf das Hauptfenster
+ */
+function setMainWindow(window) {
+  mainWindow = window;
+}
 
 /**
  * Registriert alle IPC-Handler für Belege und Kostenarten
@@ -30,8 +40,20 @@ function registerBelegeHandlers() {
     }
   });
 
+  // Popup-Fenster für neuen Beleg öffnen
+  ipcMain.handle("belege:openCreateWindow", (e) => {
+    try {
+      const parent = BrowserWindow.fromWebContents(e.sender);
+      const win = createNewBelegWindow(parent);
+      return true;
+    } catch (error) {
+      console.error("Fehler beim Öffnen des Popup-Fensters:", error);
+      throw error;
+    }
+  });
+
   // Neuen Beleg erstellen
-  ipcMain.handle("belege:create", async (_e, p) => {
+  ipcMain.handle("belege:create", async (e, p) => {
     try {
       // Basic Validation
       if (!p || typeof p !== "object") {
@@ -64,6 +86,11 @@ function registerBelegeHandlers() {
         LEFT JOIN kostenarten ka ON ka.id = b.kostenartId
         WHERE b.id = ?
       `, [result.lastID]);
+
+      // Broadcast an das Hauptfenster, dass ein neuer Beleg erstellt wurde
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.webContents.send("belege:created", row);
+      }
 
       return row;
     } catch (error) {
@@ -133,6 +160,16 @@ function registerBelegeHandlers() {
       throw error;
     }
   });
+
+  // Popup-Fenster schließen
+  ipcMain.handle("window:closeSelf", (e) => {
+    try {
+      const w = BrowserWindow.fromWebContents(e.sender);
+      w?.close();
+    } catch (error) {
+      console.error("Fehler beim Schließen des Popup-Fensters:", error);
+    }
+  });
 }
 
-module.exports = { registerBelegeHandlers };
+module.exports = { registerBelegeHandlers, setMainWindow };

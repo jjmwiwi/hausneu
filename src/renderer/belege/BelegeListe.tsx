@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import BelegErfassungModal from './BelegErfassungModal';
 
 // Typ-Deklaration für window.api
 declare global {
   interface Window {
     api: {
       invoke: (channel: string, ...args: any[]) => Promise<any>;
+      on: (channel: string, callback: (data: any) => void) => void;
     };
   }
 }
 
 const BelegeListe: React.FC = () => {
-  const [open, setOpen] = useState(false);
   const [belege, setBelege] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -28,6 +27,29 @@ const BelegeListe: React.FC = () => {
     }
   };
 
+  const handleAddNew = async () => {
+    try {
+      await window.api.invoke("belege:openCreateWindow");
+    } catch (error) {
+      console.error('Fehler beim Öffnen des Popup-Fensters:', error);
+    }
+  };
+
+  // Event-Listener für Beleg-Erstellung
+  useEffect(() => {
+    const handleBelegCreated = () => {
+      load(); // Liste neu laden
+    };
+
+    window.api.on("belege:created", handleBelegCreated);
+
+    return () => {
+      // Cleanup: Event-Listener entfernen
+      // Da wir kein off() haben, können wir den Listener nicht explizit entfernen
+      // Das ist in diesem Fall akzeptabel, da die Komponente nur einmal gemountet wird
+    };
+  }, []);
+
   useEffect(() => {
     load();
   }, []);
@@ -38,7 +60,7 @@ const BelegeListe: React.FC = () => {
         <button 
           data-testid="btn-new-beleg" 
           type="button" 
-          onClick={() => setOpen(true)}
+          onClick={handleAddNew}
         >
           + neuer Beleg
         </button>
@@ -55,16 +77,7 @@ const BelegeListe: React.FC = () => {
         )}
       </div>
 
-      {open && (
-        <BelegErfassungModal 
-          open={open} 
-          onClose={() => setOpen(false)} 
-          onSaved={() => {
-            setOpen(false);
-            load();
-          }} 
-        />
-      )}
+
     </div>
   );
 };

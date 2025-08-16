@@ -556,6 +556,14 @@ async function createWindow () {
       enableRemoteModule: false
     }
   });
+
+  // Referenz auf das Hauptfenster für IPC-Handler setzen
+  try {
+    const { setMainWindow } = require('./src/main/ipc/belege.js');
+    setMainWindow(win);
+  } catch (error) {
+    console.warn('Konnte Referenz auf Hauptfenster nicht setzen:', error.message);
+  }
   
   // Content-Security-Policy setzen
   win.webContents.session.webRequest.onHeadersReceived((details, callback) => {
