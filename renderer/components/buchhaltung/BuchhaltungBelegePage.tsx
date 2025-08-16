@@ -14,6 +14,14 @@ const BuchhaltungBelegePage: React.FC = () => {
     navigate(`/immobilien/${wegId}/buchhaltung/umlage/nach-einheiten?jahr=${jahr}`);
   };
 
+  const handleAddNew = async () => {
+    try {
+      await (window as any).api.invoke("belege:openCreateWindow");
+    } catch (error) {
+      console.error('Fehler beim Öffnen des Popup-Fensters:', error);
+    }
+  };
+
   return (
     <div>
       <PageTitle 
@@ -38,6 +46,7 @@ const BuchhaltungBelegePage: React.FC = () => {
               📊 Umlage nach Einheiten
             </button>
             <button
+              onClick={handleAddNew}
               style={{
                 padding: '8px 16px',
                 backgroundColor: '#3b82f6',
