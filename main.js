@@ -3,7 +3,7 @@
 const { app, BrowserWindow, ipcMain, dialog, shell } = require('electron');
 const path = require('path');
 const fs = require('fs');
-const Database = require('better-sqlite3');
+const sqlite3 = require('sqlite3').verbose();
 
 let db;
 
@@ -73,7 +73,7 @@ function initDB() {
   if (!fs.existsSync(dbDir)) fs.mkdirSync(dbDir, { recursive: true });
   const dbPath = path.join(dbDir, 'hausverwaltung.db');
   const firstTime = !fs.existsSync(dbPath);
-  db = new Database(dbPath);
+  db = new sqlite3.Database(dbPath);
 
   db.exec(`
     PRAGMA journal_mode = WAL;
