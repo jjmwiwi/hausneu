@@ -15,8 +15,7 @@ export function DebugPageId({ id, className = '' }: DebugPageIdProps) {
   // Robuster Modus-Check für Vite + globaler Toggle
   const mode = (globalThis as any).importMeta?.env?.MODE || 
                (globalThis as any).import?.meta?.env?.MODE || 
-               process.env.NODE_ENV ?? 
-               'development';
+               (process.env.NODE_ENV ?? 'development');
   const enabled = (window as any).__DEBUG_PAGE_IDS__ === true || mode !== 'production';
   
   // Einmaliges Logging für Debugging

@@ -539,9 +539,27 @@ async function createWindow () {
   const win = new BrowserWindow({
     width: 1250,
     height: 800,
-    webPreferences: { preload: path.join(__dirname, 'preload.js') }
+    webPreferences: { 
+      preload: path.join(__dirname, 'preload.js'), 
+      contextIsolation: true, 
+      nodeIntegration: false, 
+      sandbox: true,
+      webSecurity: true,
+      allowRunningInsecureContent: false,
+      enableRemoteModule: false
+    }
   });
   
+  // Content-Security-Policy setzen
+  win.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+    callback({
+      responseHeaders: {
+        ...details.responseHeaders,
+        'Content-Security-Policy': ['default-src \'self\'; script-src \'self\' \'unsafe-inline\' \'unsafe-eval\'; style-src \'self\' \'unsafe-inline\';']
+      }
+    });
+  });
+
   if (isDev) {
     // 1) SW & Cache im Dev sofort entsorgen
     try {
