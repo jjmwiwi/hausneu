@@ -29,7 +29,9 @@ const NeuerBelegPage: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    loadKostenarten();
+    // Temporär: Kostenarten nicht laden, um Fehler zu vermeiden
+    console.log('NeuerBelegPage mounted - testing basic rendering');
+    // loadKostenarten();
   }, []);
 
   const loadKostenarten = async () => {
@@ -106,7 +108,8 @@ const NeuerBelegPage: React.FC = () => {
 
   return (
     <div data-testid="modal-beleg-erfassung" style={{ padding: '2rem', maxWidth: '600px', margin: '0 auto' }}>
-      <h1>Neuer Beleg</h1>
+      <h1>Neuer Beleg - TEST VERSION</h1>
+      <p style={{ color: 'red', fontWeight: 'bold' }}>DEBUG: Diese Seite wird gerendert!</p>
       
       <div style={{ marginBottom: '1rem' }}>
         <label>
@@ -148,11 +151,9 @@ const NeuerBelegPage: React.FC = () => {
             style={{ width: '100%', padding: '0.5rem', marginTop: '0.25rem' }}
           >
             <option value="">Bitte wählen...</option>
-            {kostenarten.map(kostenart => (
-              <option key={kostenart.id} value={kostenart.id}>
-                {kostenart.name}
-              </option>
-            ))}
+            {/* Temporär: Kostenarten deaktiviert für Test */}
+            <option value="1">Test Kostenart 1</option>
+            <option value="2">Test Kostenart 2</option>
           </select>
         </label>
         {errors.kostenartId && <div style={{ color: 'red', fontSize: '0.875rem' }}>{errors.kostenartId}</div>}
