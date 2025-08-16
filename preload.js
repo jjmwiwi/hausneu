@@ -6,7 +6,12 @@ const whitelistedChannels = [
   'db:query',
   'pdf:export', 
   'settings:get',
-  'settings:set'
+  'settings:set',
+  'belege:create',
+  'belege:list',
+  'belege:update',
+  'belege:delete',
+  'kostenarten:list'
 ];
 
 const whitelistedEvents = [

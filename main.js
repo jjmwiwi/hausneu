@@ -5,6 +5,13 @@ const path = require('path');
 const fs = require('fs');
 const sqlite3 = require('sqlite3').verbose();
 
+// Import der neuen IPC-Handler
+try {
+  require('./src/main/ipc/belege');
+} catch (error) {
+  console.warn('Belege IPC-Handler konnten nicht geladen werden:', error.message);
+}
+
 let db;
 
 /* ---------- doppelte IPC-Registrierungen vermeiden ---------- */
@@ -596,6 +603,15 @@ async function waitForDevServer(url, timeoutMs = 10000) {
 function registerIpcOnce() {
   if (global.__ipcRegistered) return;
   global.__ipcRegistered = true;
+
+  // Neue Belege-IPC-Handler registrieren
+  try {
+    const { registerBelegeHandlers } = require('./src/main/ipc/belege');
+    registerBelegeHandlers();
+    console.log('Belege IPC-Handler erfolgreich registriert');
+  } catch (error) {
+    console.warn('Belege IPC-Handler konnten nicht registriert werden:', error.message);
+  }
 
 ipcMain.handle('db:get-overview', () => {
     try {
