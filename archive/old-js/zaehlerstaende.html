@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <title>Zählerstände erfassen</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src data: 'self'; style-src 'self' 'unsafe-inline';">
+  <link rel="stylesheet" href="../build/base.css">
+  <style>
+    :root { --bg:#f7f8fb; --panel:#ffffff; --muted:#6b7280; --primary:#5b3cc4; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family:Segoe UI, Arial, sans-serif; background:var(--bg); color:#111; }
+    .app { display:grid; grid-template-columns: 260px 1fr; min-height:100vh; }
+    aside {
+      background:#fbfbfd; border-right:1px solid #e5e7eb; padding:18px 14px;
+    }
+    .brand { display:flex; align-items:center; gap:8px; font-weight:600; margin-bottom:10px;}
+    .brand-text { font-size: 1.4em; }
+    .brand i { width:20px; height:20px; background:#16a34a; border-radius:4px; display:inline-block; }
+    nav a, nav button {
+      display:flex; align-items:center; gap:10px;
+      padding:10px 12px; color:#111; text-decoration:none; border-radius:8px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: inherit;
+      font-family: inherit;
+    }
+    nav a:hover, nav button:hover { background:#eef2ff; }
+    nav a .icon, nav button .icon { width:18px; text-align:center; color:#64748b; }
+    main { padding:24px; }
+    
+    /* Zählerstände spezifische Styles */
+    header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+    .row { display:grid; grid-template-columns: 1fr 140px 140px 120px 160px 110px; gap:10px; align-items:center; padding:10px; border-bottom:1px solid #eee; }
+    .row.head { font-weight:600; background:#fafafa; border-top:1px solid #eee; }
+    select, input[type="number"], input[type="date"], input[type="text"] { width:100%; padding:8px; border:1px solid #d0d7de; border-radius:6px; }
+    .group { margin-top:18px; border:1px solid #eee; border-radius:12px; overflow:hidden; }
+    .group h3 { margin:0; padding:10px 12px; background:#f6f8fa; border-bottom:1px solid #eee; font-size:14px; }
+    .ok { color:#0a7f2e; font-weight:600; }
+    .btn { padding:8px 12px; border:none; border-radius:8px; background:#6757ff; color:white; cursor:pointer; }
+    .btn:disabled{ opacity:.6; cursor:not-allowed; }
+    .toolbar { display:flex; gap:10px; align-items:center; }
+    .toast { position:fixed; right:16px; bottom:16px; padding:10px 12px; background:#1f883d; color:#fff; border-radius:8px; display:none; }
+    
+    /* Navigation styling */
+    .nav-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      padding: 4px 6px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .nav-item:hover {
+      background: rgba(0,0,0,.05);
+    }
+    .nav-item .label {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+    }
+    .nav-toggle {
+      background: none;
+      border: none;
+      font-size: 10px;
+      color: inherit;
+      cursor: pointer;
+      padding: 2px;
+      border-radius: 4px;
+      transition: transform 0.2s;
+      margin-left: auto;
+    }
+    .nav-toggle:hover {
+      background: rgba(0,0,0,.1);
+    }
+    .nav-toggle.expanded {
+      transform: rotate(180deg);
+    }
+    .nav-item {
+      cursor: pointer;
+      user-select: none;
+    }
+    .nav-item:hover {
+      background: rgba(0,0,0,.05);
+      border-radius: 8px;
+    }
+    .nav-sub {
+      display: block;
+      margin-left: 12px;
+      padding-left: 8px;
+      border-left: 1px solid rgba(0,0,0,.06);
+      list-style: none;
+      margin-top: 4px;
+      margin-bottom: 8px;
+    }
+    .nav-sub.hidden {
+      display: none !important;
+    }
+    .nav-sub.collapsed {
+      display: none !important;
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .nav-item .chev {
+      transition: transform .15s ease;
+      font-size: 10px;
+      margin-right: 6px;
+      color: #666;
+    }
+    .nav-item[aria-expanded="true"] .chev {
+      transform: rotate(90deg);
+    }
+    .nav-item:focus-within {
+      outline: 2px solid rgba(99,102,241,.35);
+      outline-offset: 2px;
+      border-radius: 8px;
+    }
+    .nav-item .nav-link[aria-current="page"] {
+      background: rgba(99,102,241,.12);
+      color: #5b3cc4;
+    }
+    .nav-item .nav-link {
+      background: none;
+      border: none;
+      padding: 4px 8px;
+      border-radius: 6px;
+      text-decoration: none;
+      color: inherit;
+      font-size: 0.9em;
+      transition: background 0.2s;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      width: 100%;
+      text-align: left;
+    }
+    .nav-item .nav-link:hover {
+      background: rgba(0,0,0,.05);
+    }
+    .nav-item .nav-link:focus {
+      outline: none;
+    }
+    .sidebar {
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside>
+      <div class="brand"><i></i> <span class="brand-text">Immobilien</span></div>
+      <nav>
+        <button id="nav-immobilien-toggle" class="nav-link" aria-expanded="false" aria-controls="nav-immos">
+          <span class="icon">🏠</span> 
+          <span class="label">Immobilien</span>
+        </button>
+        <ul id="nav-immos" class="nav-sub hidden" role="tree" aria-label="Immobilien Untermenü"></ul>
+        <button id="nav-zaehler"><span class="icon">🧮</span> <span>Zählerstand</span></button>
+        <a id="nav-ablese" href="ableseprotokoll.html"><span class="icon">📄</span> <span>Ableseprotokoll</span></a>
+        <a id="nav-about"><span class="icon">ℹ️</span> <span>Über</span></a>
+      </nav>
+    </aside>
+
+    <main>
+      <header>
+        <h2>Zählerstände erfassen</h2>
+        <div class="toolbar">
+          <label>Einheit:</label>
+          <select id="unitFilter"></select>
+          <label>Zeitraum:</label>
+          <input id="periodStart" type="date">
+          <span>–</span>
+          <input id="periodEnd" type="date">
+          <button id="refresh" class="btn">Aktualisieren</button>
+        </div>
+      </header>
+
+      <div id="container"></div>
+      <div id="toast" class="toast">Gespeichert</div>
+    </main>
+  </div>
+
+  <script src="./zaehlerstaende.js"></script>
+  <script src="./nav.js"></script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hausverwaltung - React</title>
+    <link rel="stylesheet" href="./renderer/styles/globals.css">
+    <style>
+        #root {
+            height: 100vh;
+        }
+    </style>
+    <!-- Globaler Debug-Toggle für Page-IDs -->
+    <script>
+        // Page-ID-Debugging aktivieren (nur in Development)
+        if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+            window.__DEBUG_PAGE_IDS__ = true;
+            console.log('[HTML] Debug-Toggle aktiviert für Port:', window.location.port);
+        }
+    </script>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="module" src="./renderer/index-react.tsx"></script>
+</body>
+</html>

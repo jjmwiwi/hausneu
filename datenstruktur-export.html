@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hausverwaltungs-Anwendung - Datenstruktur</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #34495e;
+            border-left: 4px solid #3498db;
+            padding-left: 15px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+        h3 {
+            color: #2980b9;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        .code-block {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 15px 0;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+        }
+        .interface {
+            background-color: #e8f4fd;
+            border-left: 4px solid #3498db;
+        }
+        .enum {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+        }
+        .table {
+            background-color: #f8f9fa;
+            border-left: 4px solid #28a745;
+        }
+        .example {
+            background-color: #d4edda;
+            border-left: 4px solid #28a745;
+        }
+        .info-box {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .highlight {
+            background-color: #fff3cd;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        ul {
+            margin: 10px 0;
+            padding-left: 25px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+            color: #6c757d;
+            font-size: 14px;
+        }
+        @media print {
+            body {
+                background-color: white;
+                margin: 0;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+                padding: 20px;
+            }
+            h1, h2, h3 {
+                page-break-after: avoid;
+            }
+            .code-block {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏢 Hausverwaltungs-Anwendung - Datenstruktur</h1>
+        
+        <div class="info-box">
+            <strong>📋 Übersicht:</strong> Diese Dokumentation beschreibt die komplette Datenstruktur der Hausverwaltungs-Anwendung, einschließlich aller Datenmodelle, Schnittstellen und Beziehungen.
+        </div>
+
+        <h2>📊 1. WEG (Wohnungseigentümergemeinschaft)</h2>
+        <p>Die oberste Ebene der Anwendung repräsentiert eine WEG mit allen zugehörigen Daten.</p>
+        
+        <div class="code-block interface">
+interface WEG {
+  id: string;                    // Eindeutige WEG-ID
+  name: string;                  // Name der WEG
+  address: string;               // Adresse
+  city: string;                  // Stadt
+  zip: string;                   // PLZ
+  notes: string;                 // Notizen
+  image?: string;                // Optional: Bild
+}
+        </div>
+
+        <h2>🏠 2. WEG-Einheiten (Wohnungen)</h2>
+        <p>Einzelne Wohnungen oder Einheiten innerhalb der WEG mit spezifischen Eigenschaften.</p>
+        
+        <div class="code-block interface">
+interface WEGEinheit {
+  id: string;                    // Eindeutige Einheits-ID
+  titel: string;                 // Titel der Wohnung
+  wohnungsnummer: number;        // Wohnungsnummer
+  mieter?: string;               // Optional: Mieter-Name
+  email?: string;                // Optional: E-Mail
+  telefon?: string;              // Optional: Telefon
+  flaecheM2?: number;           // Optional: Wohnfläche in m²
+  miteigentumsAnteil?: number;  // Optional: MEA in %
+}
+        </div>
+
+        <h2>🔢 3. Zähler (Meter)</h2>
+        <p>Alle Arten von Zählern für verschiedene Medien und Verbrauchsmessungen.</p>
+        
+        <div class="code-block interface">
+interface Zaehler {
+  id: string;                    // Eindeutige Zähler-ID
+  wegId: string;                 // Zuordnung zur WEG
+  einheitId: string;             // Zuordnung zur Einheit ('allgemein' für Gemeinschaft)
+  zaehlernummer: string;         // Zählernummer (z.B. "4336128")
+  bezeichnung: string;           // Bezeichnung (z.B. "Allgemein Strom")
+  zaehlertyp: ZaehlerTyp;       // Typ des Zählers
+  zaehlertypEinheit: string;     // Einheit (z.B. "kWh", "m³", "MWh")
+  standort?: string;             // Optional: Standort
+  notiz?: string;                // Optional: Notiz
+  startwert?: number | null;     // Optional: Startwert
+  ablesewert?: number | null;    // Optional: Aktueller Ablesewert
+  createdAt: string;             // Erstellungsdatum
+  updatedAt: string;             // Aktualisierungsdatum
+}
+        </div>
+
+        <h3>3.1 Zählertypen (Enum)</h3>
+        <div class="code-block enum">
+export enum ZaehlerTyp {
+  STROM = 'STROM',                    // → kWh
+  KALTWASSER = 'KALTWASSER',         // → m³
+  WARMWASSER = 'WARMWASSER',         // → m³
+  WMZ_HEIZUNG = 'WMZ_HEIZUNG',       // → MWh (Wärmemengenzähler Heizung)
+  WMZ_WARMWASSER = 'WMZ_WARMWASSER', // → MWh (Wärmemengenzähler Warmwasser)
+  SONSTIGES = 'SONSTIGES'            // → Keine Einheit
+}
+        </div>
+
+        <h2>📊 4. Zählerstände (Jahresspezifische Ablesungen)</h2>
+        <p>Jahresspezifische Ablesewerte für jeden Zähler, die individuell pro Zeitraum gespeichert werden.</p>
+        
+        <div class="code-block interface">
+interface Zaehlerstand {
+  zaehlernummer: string;         // Referenz auf Zähler
+  jahr: number;                  // Kalenderjahr (z.B. 2024, 2025)
+  startwert?: number;            // Optional: Startwert für das Jahr
+  ablesewert?: number;           // Optional: Ablesewert für das Jahr
+  notiz?: string;                // Optional: Notiz für das Jahr
+  updatedAt: string;             // Aktualisierungsdatum
+  einheitId?: string;            // Optional: Einheits-ID
+}
+        </div>
+
+        <div class="info-box">
+            <strong>💡 Wichtig:</strong> Zählerstände werden jahresspezifisch gespeichert, sodass Ablesungen immer individuell pro Zeitraum sind und nicht bei allen Zählern gleich angezeigt werden.
+        </div>
+
+        <h2>💰 5. Kostenarten</h2>
+        <p>Verschiedene Arten von Kosten mit entsprechenden Verteilungsschlüsseln.</p>
+        
+        <div class="code-block interface">
+interface Kostenart {
+  id: string;                    // Eindeutige Kostenarten-ID
+  name: string;                  // Name der Kostenart
+  verteilschluessel: Verteilschluessel; // Verteilungsschlüssel
+}
+        </div>
+
+        <h3>5.1 Verteilungsschlüssel</h3>
+        <ul>
+            <li><span class="highlight">miteigentumsanteil</span> → Nach MEA (Miteigentumsanteil)</li>
+            <li><span class="highlight">wohnflaeche</span> → Nach Wohnfläche</li>
+            <li><span class="highlight">strom</span> → Nach Stromverbrauch</li>
+            <li><span class="highlight">anzahl_wohnungen</span> → Nach Anzahl Wohnungen</li>
+            <li><span class="highlight">individuell</span> → Individuelle Zuweisung</li>
+            <li><span class="highlight">waermemenge_heizung</span> → Nach Heizungsverbrauch</li>
+            <li><span class="highlight">wasserverbrauch</span> → Nach Wasserverbrauch</li>
+            <li><span class="highlight">gesamtwasserverbrauch</span> → Nach Gesamtwasserverbrauch</li>
+            <li><span class="highlight">waermemenge_warmwasser</span> → Nach Warmwasserverbrauch</li>
+        </ul>
+
+        <h2>🏗️ 6. Datenbank-Tabellen (SQLite)</h2>
+        <p>Die Backend-Datenbank verwendet SQLite mit folgenden Haupttabellen:</p>
+
+        <h3>6.1 Grundstruktur</h3>
+        <div class="code-block table">
+-- Eigenschaften (WEGs)
+properties (id, name, address, notes, image_path)
+
+-- Einheiten (Wohnungen)
+units (id, property_id, name, area_m2, mea, occupant_name, occupant_email, occupant_phone, persons, type, move_in, move_out)
+
+-- Zähler
+meters (id, property_id, unit_id, number, label, meter_type, location, unit)
+
+-- Zählerstände
+meter_readings (id, meter_id, period_start, period_end, start_value, end_value, consumption, unit, note)
+        </div>
+
+        <h3>6.2 Kostenverwaltung</h3>
+        <div class="code-block table">
+-- Kostenkategorien
+cost_categories (id, property_id, name, distribution_key)
+
+-- Belege
+vouchers (id, property_id, category_id, voucher_no, voucher_date, gross, net, include_in_statement, file_path)
+        </div>
+
+        <h3>6.3 Heizung & Energie</h3>
+        <div class="code-block table">
+-- Heizungseinstellungen
+heating_settings (id, property_id, system_type, fuel, heated_area, supply_temp_c, hotwater_unit, no_hotwater_consumption, consumption_share)
+
+-- Betriebskostenabrechnungen
+operating_statements (id, property_id, year, status, created_at, updated_at)
+
+-- Heizungsabrechnungen
+heating_statements (id, operating_statement_id, fuel_input_type, input_amount, unit_price, gross_cost, warmwater_wmz_meter_id, period_start, period_end, notes, created_at, updated_at)
+        </div>
+
+        <h3>6.4 Zahlungen & Abrechnungen</h3>
+        <div class="code-block table">
+-- Zahlungen
+payments (id, property_id, unit_id, date, amount, year, note, method)
+
+-- Vorauszahlungen (monatlich)
+advance_payments_monthly (id, property_id, unit_id, year, month, amount)
+
+-- Abrechnungsdurchläufe
+statement_runs (id, property_id, year, status, created_at, updated_at, heating_costs_total, operating_costs_total, advance_payments_total, notes)
+
+-- Abrechnungszeilen
+statement_rows (id, run_id, unit_id, cost_type, distribution_key, basis_value, basis_label, share_percent, amount_euro, category, is_heating_cost, created_at)
+
+-- Abrechnungszusammenfassung
+statement_summary (id, run_id, unit_id, total_costs, advance_payments, balance, area_m2, mea, persons, created_at)
+        </div>
+
+        <h2>🔄 7. Datenfluss & Speicherung</h2>
+        
+        <h3>7.1 Frontend (React)</h3>
+        <ul>
+            <li>Zustandsverwaltung über <span class="highlight">ImmobilienContext</span></li>
+            <li>Lokale Speicherung in <span class="highlight">localStorage</span> für Zählerstände</li>
+            <li>Optimistische Updates für bessere Benutzererfahrung</li>
+        </ul>
+
+        <h3>7.2 Backend (Electron)</h3>
+        <ul>
+            <li><span class="highlight">SQLite</span>-Datenbank für persistente Speicherung</li>
+            <li><span class="highlight">IndexedDB</span> für Zähler-Stammdaten</li>
+            <li>Hybrid-Ansatz: SQLite + localStorage</li>
+        </ul>
+
+        <h3>7.3 Synchronisation</h3>
+        <ul>
+            <li>Zählerstände werden <span class="highlight">jahresspezifisch</span> gespeichert</li>
+            <li>Jedes Jahr hat eigene Ablesewerte</li>
+            <li>Keine Vermischung von Stammdaten und jahresspezifischen Daten</li>
+        </ul>
+
+        <h2>📈 8. Aktuelle Daten (Beispiele)</h2>
+        
+        <h3>8.1 Beispiel-WEG</h3>
+        <div class="code-block example">
+{
+  name: "WEG Stuttgarter Strasse 104",
+  address: "Stuttgarter Strasse 104",
+  city: "Leonberg",
+  zip: "71229"
+}
+        </div>
+
+        <h3>8.2 Beispiel-Einheiten</h3>
+        <div class="code-block example">
+[
+  { 
+    id: '1', 
+    titel: 'Wohnung Haus oben', 
+    wohnungsnummer: 4, 
+    mieter: 'Rudolf Klee', 
+    flaecheM2: 120, 
+    miteigentumsAnteil: 25 
+  },
+  { 
+    id: '2', 
+    titel: 'Wohnung Haus unten', 
+    wohnungsnummer: 3, 
+    mieter: 'Rudolf Klee', 
+    flaecheM2: 110, 
+    miteigentumsAnteil: 23 
+  },
+  { 
+    id: '3', 
+    titel: 'Wohnung Haus vorne', 
+    wohnungsnummer: 2, 
+    mieter: 'Amerika', 
+    flaecheM2: 95, 
+    miteigentumsAnteil: 20 
+  },
+  { 
+    id: '4', 
+    titel: 'Wohnung Keller vorne', 
+    wohnungsnummer: 1, 
+    mieter: 'Jürgen Müller', 
+    flaecheM2: 85, 
+    miteigentumsAnteil: 18 
+  }
+]
+        </div>
+
+        <h3>8.3 Beispiel-Zähler</h3>
+        <div class="code-block example">
+[
+  { 
+    zaehlernummer: '4336128', 
+    bezeichnung: 'Allgemein Strom', 
+    zaehlertyp: 'STROM', 
+    einheitId: 'allgemein' 
+  },
+  { 
+    zaehlernummer: '6ZRI8810523269', 
+    bezeichnung: 'Wärmemengenzähler Allgemein', 
+    zaehlertyp: 'WMZ_HEIZUNG', 
+    einheitId: 'allgemein' 
+  }
+]
+        </div>
+
+        <h2>🔧 9. Technische Details</h2>
+        
+        <h3>9.1 Speicherorte</h3>
+        <ul>
+            <li><span class="highlight">SQLite:</span> Hauptdatenbank in <code>%APPDATA%/hausverwaltung/data/hausverwaltung.db</code></li>
+            <li><span class="highlight">localStorage:</span> Zählerstände und temporäre Daten</li>
+            <li><span class="highlight">IndexedDB:</span> Zähler-Stammdaten und Cache</li>
+        </ul>
+
+        <h3>9.2 Datenvalidierung</h3>
+        <ul>
+            <li>TypeScript-Interfaces für Typsicherheit</li>
+            <li>Runtime-Validierung in Storage-Funktionen</li>
+            <li>Automatische Datenreparatur bei Inkonsistenzen</li>
+        </ul>
+
+        <h3>9.3 Performance-Optimierungen</h3>
+        <ul>
+            <li>Selektives Laden von jahresspezifischen Daten</li>
+            <li>Optimistische Updates für bessere UX</li>
+            <li>Debounced Speicherung bei Benutzereingaben</li>
+        </ul>
+
+        <div class="footer">
+            <p><strong>Hausverwaltungs-Anwendung - Datenstruktur</strong></p>
+            <p>Erstellt am: <span id="current-date"></span></p>
+            <p>Version: 1.0 | Alle Daten sind jahresspezifisch und individuell pro Zeitraum gespeichert</p>
+        </div>
+    </div>
+
+    <script>
+        // Aktuelles Datum setzen
+        document.getElementById('current-date').textContent = new Date().toLocaleDateString('de-DE');
+        
+        // Drucken oder PDF-Export ermöglichen
+        window.print = function() {
+            window.print();
+        };
+    </script>
+</body>
+</html>

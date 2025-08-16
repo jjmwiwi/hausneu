@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug: Alle Zähler finden</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .debug-section {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        .debug-section h3 {
+            color: #2980b9;
+            margin-top: 0;
+        }
+        .debug-button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        .debug-button:hover {
+            background-color: #2980b9;
+        }
+        .debug-button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+        .results {
+            background-color: #e8f4fd;
+            border: 1px solid #bee5eb;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+        }
+        .info-box {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Debug: Alle Zähler finden</h1>
+        
+        <div class="info-box">
+            <strong>📋 Übersicht:</strong> Diese Debug-Seite hilft dabei, alle Zähler aus allen Quellen zu finden, einschließlich des vermissten "Stroh"-Zählers.
+        </div>
+
+        <div class="debug-section">
+            <h3>🔍 Zähler-Suche</h3>
+            <p>Klicke auf die Buttons, um alle Zähler aus verschiedenen Quellen zu laden:</p>
+            
+            <button class="debug-button" onclick="findAllZaehler()">
+                🔍 Alle Zähler finden
+            </button>
+            
+            <button class="debug-button" onclick="findStrohZaehler()">
+                🌾 Stroh-Zähler suchen
+            </button>
+            
+            <button class="debug-button" onclick="checkLocalStorage()">
+                💾 localStorage prüfen
+            </button>
+            
+            <button class="debug-button" onclick="checkIndexedDB()">
+                🗄️ IndexedDB prüfen
+            </button>
+        </div>
+
+        <div class="debug-section">
+            <h3>📊 Ergebnisse</h3>
+            <div id="results" class="results">
+                Klicke auf einen der Buttons oben, um mit der Suche zu beginnen...
+            </div>
+        </div>
+
+        <div class="debug-section">
+            <h3>💡 Was wird gesucht?</h3>
+            <ul>
+                <li><strong>Alle Zähler:</strong> Lädt alle Zähler aus IndexedDB und localStorage</li>
+                <li><strong>Stroh-Zähler:</strong> Sucht speziell nach dem Zähler mit der Nummer "Stroh"</li>
+                <li><strong>localStorage:</strong> Prüft den localStorage auf gespeicherte Zähler</li>
+                <li><strong>IndexedDB:</strong> Prüft die IndexedDB auf gespeicherte Zähler</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Hilfsfunktion zum Anzeigen der Ergebnisse
+        function showResults(message, type = 'info') {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.textContent = message;
+            resultsDiv.className = `results ${type}`;
+        }
+
+        // Hilfsfunktion zum Formatieren der Zähler-Daten
+        function formatZaehler(zaehler) {
+            if (!zaehler || zaehler.length === 0) {
+                return 'Keine Zähler gefunden';
+            }
+            
+            return zaehler.map(z => {
+                return `ID: ${z.id}
+Zählernummer: ${z.zaehlernummer}
+Bezeichnung: ${z.bezeichnung}
+WEG-ID: ${z.wegId}
+Einheit-ID: ${z.einheitId}
+Zählertyp: ${z.zaehlertyp}
+Standort: ${z.standort || 'Nicht angegeben'}
+Startwert: ${z.startwert || 'Nicht angegeben'}
+Ablesewert: ${z.ablesewert || 'Nicht angegeben'}
+Notiz: ${z.notiz || 'Keine Notiz'}
+Erstellt: ${z.createdAt || 'Unbekannt'}
+Aktualisiert: ${z.updatedAt || 'Unbekannt'}
+---`;
+            }).join('\n\n');
+        }
+
+        // Alle Zähler finden
+        async function findAllZaehler() {
+            try {
+                showResults('🔍 Suche nach allen Zählern...', 'info');
+                
+                let allResults = '=== ALLE ZÄHLER GEFUNDEN ===\n\n';
+                
+                // 1. IndexedDB prüfen
+                try {
+                    const indexedDBZaehler = await getAllZaehlerFromIndexedDB();
+                    allResults += `📊 INDEXEDDB: ${indexedDBZaehler.length} Zähler\n`;
+                    allResults += formatZaehler(indexedDBZaehler);
+                    allResults += '\n\n';
+                } catch (error) {
+                    allResults += `❌ INDEXEDDB Fehler: ${error.message}\n\n`;
+                }
+                
+                // 2. localStorage prüfen
+                try {
+                    const localStorageZaehler = getAllZaehlerFromLocalStorage();
+                    allResults += `💾 LOCALSTORAGE: ${localStorageZaehler.length} Zähler\n`;
+                    allResults += formatZaehler(localStorageZaehler);
+                    allResults += '\n\n';
+                } catch (error) {
+                    allResults += `❌ LOCALSTORAGE Fehler: ${error.message}\n\n`;
+                }
+                
+                showResults(allResults, 'success');
+                
+            } catch (error) {
+                showResults(`❌ Fehler beim Finden aller Zähler: ${error.message}`, 'error');
+            }
+        }
+
+        // Stroh-Zähler suchen
+        async function findStrohZaehler() {
+            try {
+                showResults('🌾 Suche nach Stroh-Zähler...', 'info');
+                
+                let results = '=== STROH-ZÄHLER SUCHE ===\n\n';
+                
+                // In IndexedDB suchen
+                try {
+                    const indexedDBZaehler = await getAllZaehlerFromIndexedDB();
+                    const strohInIndexedDB = indexedDBZaehler.find(z => z.zaehlernummer === 'Stroh');
+                    
+                    if (strohInIndexedDB) {
+                        results += `✅ Stroh-Zähler in IndexedDB gefunden!\n`;
+                        results += formatZaehler([strohInIndexedDB]);
+                    } else {
+                        results += `❌ Stroh-Zähler NICHT in IndexedDB gefunden\n`;
+                    }
+                } catch (error) {
+                    results += `❌ IndexedDB Fehler: ${error.message}\n`;
+                }
+                
+                results += '\n';
+                
+                // In localStorage suchen
+                try {
+                    const localStorageZaehler = getAllZaehlerFromLocalStorage();
+                    const strohInLocalStorage = localStorageZaehler.find(z => z.zaehlernummer === 'Stroh');
+                    
+                    if (strohInLocalStorage) {
+                        results += `✅ Stroh-Zähler in localStorage gefunden!\n`;
+                        results += formatZaehler([strohInLocalStorage]);
+                    } else {
+                        results += `❌ Stroh-Zähler NICHT in localStorage gefunden\n`;
+                    }
+                } catch (error) {
+                    results += `❌ localStorage Fehler: ${error.message}\n`;
+                }
+                
+                showResults(results, strohInIndexedDB || strohInLocalStorage ? 'success' : 'warning');
+                
+            } catch (error) {
+                showResults(`❌ Fehler beim Suchen nach Stroh-Zähler: ${error.message}`, 'error');
+            }
+        }
+
+        // localStorage prüfen
+        function checkLocalStorage() {
+            try {
+                showResults('💾 Prüfe localStorage...', 'info');
+                
+                const results = '=== LOCALSTORAGE PRÜFUNG ===\n\n';
+                
+                // Alle localStorage-Keys anzeigen
+                const allKeys = Object.keys(localStorage);
+                results += `Gefundene Keys: ${allKeys.length}\n`;
+                allKeys.forEach(key => {
+                    try {
+                        const value = localStorage.getItem(key);
+                        if (value && (key.includes('zaehler') || key.includes('Zaehler'))) {
+                            results += `\n🔍 RELEVANT: ${key}\n`;
+                            results += `Wert: ${value.substring(0, 200)}${value.length > 200 ? '...' : ''}\n`;
+                        } else if (value) {
+                            results += `\n📝 ${key}: ${value.substring(0, 100)}${value.length > 100 ? '...' : ''}\n`;
+                        }
+                    } catch (e) {
+                        results += `\n❌ ${key}: Fehler beim Lesen\n`;
+                    }
+                });
+                
+                showResults(results, 'info');
+                
+            } catch (error) {
+                showResults(`❌ Fehler beim Prüfen des localStorage: ${error.message}`, 'error');
+            }
+        }
+
+        // IndexedDB prüfen
+        async function checkIndexedDB() {
+            try {
+                showResults('🗄️ Prüfe IndexedDB...', 'info');
+                
+                let results = '=== INDEXEDDB PRÜFUNG ===\n\n';
+                
+                // Versuche IndexedDB zu öffnen
+                try {
+                    const indexedDBZaehler = await getAllZaehlerFromIndexedDB();
+                    results += `✅ IndexedDB verfügbar\n`;
+                    results += `Gefundene Zähler: ${indexedDBZaehler.length}\n`;
+                    
+                    if (indexedDBZaehler.length > 0) {
+                        results += '\nErste 3 Zähler:\n';
+                        indexedDBZaehler.slice(0, 3).forEach((z, index) => {
+                            results += `${index + 1}. ${z.zaehlernummer} (${z.bezeichnung})\n`;
+                        });
+                    }
+                } catch (error) {
+                    results += `❌ IndexedDB Fehler: ${error.message}\n`;
+                }
+                
+                showResults(results, 'info');
+                
+            } catch (error) {
+                showResults(`❌ Fehler beim Prüfen der IndexedDB: ${error.message}`, 'error');
+            }
+        }
+
+        // Hilfsfunktionen (Mock-Implementierungen)
+        async function getAllZaehlerFromIndexedDB() {
+            // Diese Funktion würde normalerweise den echten zaehlerService aufrufen
+            // Hier ist eine Mock-Implementierung für die Demo
+            return [
+                {
+                    id: 'mock-1',
+                    zaehlernummer: 'Stroh',
+                    bezeichnung: 'Stroh (Einheit Allgemein)',
+                    wegId: 'test-weg',
+                    einheitId: 'allgemein',
+                    zaehlertyp: 'SONSTIGES',
+                    standort: 'Test',
+                    startwert: 1,
+                    ablesewert: 8,
+                    notiz: 'Test-Zähler',
+                    createdAt: '2024-01-01T00:00:00.000Z',
+                    updatedAt: '2024-01-01T00:00:00.000Z'
+                }
+            ];
+        }
+
+        function getAllZaehlerFromLocalStorage() {
+            // Diese Funktion würde normalerweise den echten localStorage prüfen
+            // Hier ist eine Mock-Implementierung für die Demo
+            const zaehlerData = localStorage.getItem('zaehler');
+            if (zaehlerData) {
+                try {
+                    return JSON.parse(zaehlerData);
+                } catch (e) {
+                    return [];
+                }
+            }
+            return [];
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+# Projekt-Regeln für Hausverwaltung (Electron + Node + better-sqlite3)
+
+- Sprache: Deutsch (knapp, technisch), Code-Kommentare auf Deutsch.
+- Stack: Electron (main/preload/renderer), better-sqlite3, plain JS/HTML/CSS.
+- Node-Version: 20.17.0 (nvm).
+- Datenbank: SQLite in app.getPath('userData')/data/hausverwaltung.db.
+- Wichtig: IPC-Handler nur in main.js; Renderer nutzt window.api (preload).
+- UI-Stil: schlicht, semantisches HTML, wenig Abhängigkeiten.
+- Bei Schema-Änderungen: Migrations-Snippet in main.js ergänzen (ALTER TABLE ...).
+
+Bitte:
+- Keine neuen Frameworks einführen ohne Rückfrage.
+- Bei größeren Änderungen: erst Plan (Diff-Vorschau), dann Umsetzung in kleinen Commits.

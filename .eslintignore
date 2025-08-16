@@ -1,0 +1,10 @@
+# Archivierte alte JavaScript-Dateien
+archive/old-js/
+
+# Node modules
+node_modules/
+
+# Build-Verzeichnisse
+build/
+dist/
+renderer/dist/
