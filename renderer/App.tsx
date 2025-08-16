@@ -14,7 +14,7 @@ import BuchhaltungLayout from './components/buchhaltung/BuchhaltungLayout';
 import BuchhaltungBelegePage from './components/buchhaltung/BuchhaltungBelegePage';
 import BuchhaltungUmlageNachEinheitenPage from './components/buchhaltung/BuchhaltungUmlageNachEinheitenPage';
 import BankimportPage from './components/buchhaltung/BankimportPage';
-import NeuerBelegPage from './popup/NeuerBelegPage';
+import NeuerBelegPage from '../src/renderer/popup/NeuerBelegPage';
 import { NAV } from '../src/config/nav.config';
 import RouteDebug from './dev/RouteDebug';
 
